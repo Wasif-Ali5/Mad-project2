@@ -123,7 +123,6 @@ public class ChatbotActivity extends AppCompatActivity {
             contents.put(content);
             body.put("contents", contents);
 
-            // Using the latest Gemini 2.0 Flash endpoint
             Request request = new Request.Builder()
                     .url("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=" + API_KEY)
                     .post(RequestBody.create(body.toString(), MediaType.parse("application/json")))
@@ -140,6 +139,10 @@ public class ChatbotActivity extends AppCompatActivity {
                     if (!response.isSuccessful()) {
                         if (response.code() == 429) {
                             runOnUiThread(() -> addMessage("Rate limit exceeded. Please wait a moment before sending again.", false));
+                            return;
+                        }
+                        if (response.code() == 403) {
+                            runOnUiThread(() -> addMessage("API access restriction or Quota limitation! Please wait for almost 24 hours  Google AI Studio will regenerate Quota.", false));
                             return;
                         }
                         String errorMsg = "API Error: " + response.code();
